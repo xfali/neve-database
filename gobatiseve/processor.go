@@ -11,7 +11,7 @@ import (
 	"github.com/xfali/gobatis"
 	"github.com/xfali/gobatis/datasource"
 	"github.com/xfali/gobatis/factory"
-	"github.com/xfali/neve/neve-core/container"
+	"github.com/xfali/neve-core/container"
 	"github.com/xfali/xlog"
 	"sync"
 	"time"
