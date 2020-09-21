@@ -148,7 +148,7 @@ func (p *Processor) createFactory(v *DataSource) (factory.Factory, error) {
 	return fac, err
 }
 
-func (p *Processor) Close() error {
+func (p *Processor) Destroy() error {
 	p.dataSources.Range(func(key, value interface{}) bool {
 		value.(*gobatis.SessionManager).Close()
 		return true
