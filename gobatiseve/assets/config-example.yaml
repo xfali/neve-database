@@ -1,0 +1,15 @@
+DataSources:
+  testDB:
+    DriverName: "mysql"
+    DriverInfo: "test:123@tcp(127.0.0.1:3306)/test?timeout=10s&readTimeout=15s&charset=uft8"
+    MaxCoon: 1000
+    MaxIdleConn: 500
+    ConnMaxLifetime: 0
+
+gobatis:
+  mapper:
+    dir: "assets/mappers"
+  log:
+    level: DEBUG
+  pagehelper:
+    enable: true

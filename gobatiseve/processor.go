@@ -13,7 +13,9 @@ import (
 	"github.com/xfali/gobatis/factory"
 	"github.com/xfali/neve-core"
 	"github.com/xfali/neve-core/container"
+	"github.com/xfali/pagehelper"
 	"github.com/xfali/xlog"
+	"strings"
 	"sync"
 	"time"
 )
@@ -35,22 +37,39 @@ type DataSource struct {
 type FactoryCreatorWrapper func(f func(source *DataSource) (factory.Factory, error)) func(source *DataSource) (factory.Factory, error)
 
 type Processor struct {
-	logger      xlog.Logger
-	facWrapper  FactoryCreatorWrapper
-	dataSources sync.Map
+	logger        xlog.Logger
+	facWrapper    FactoryCreatorWrapper
+	dataSources   sync.Map
+	usePageHelper bool
+	gobatisLog    string
 }
 
-func NewProcessor(logger xlog.Logger, wrapper FactoryCreatorWrapper) *Processor {
+type Opt func(*Processor)
+
+func NewProcessor(opts ...Opt) *Processor {
 	ret := &Processor{
-		logger:     logger,
+		logger:     xlog.GetLogger(),
 		facWrapper: defaultWrapper,
 	}
 
-	if wrapper != nil {
-		ret.facWrapper = wrapper
+	for _, opt := range opts {
+		opt(ret)
 	}
-
 	return ret
+}
+
+func OptSetLogger(logger xlog.Logger) Opt {
+	return func(processor *Processor) {
+		processor.logger = logger
+	}
+}
+
+func OptFactoryCreatorWrapper(wrapper FactoryCreatorWrapper) Opt {
+	return func(processor *Processor) {
+		if wrapper != nil {
+			processor.facWrapper = wrapper
+		}
+	}
 }
 
 func (p *Processor) Init(conf fig.Properties, container container.Container) error {
@@ -63,6 +82,8 @@ func (p *Processor) Init(conf fig.Properties, container container.Container) err
 		p.logger.Errorln("No Database")
 		return nil
 	}
+	p.usePageHelper = conf.Get("gobatis.pagehelper.enable", "") == "true"
+	p.gobatisLog = strings.ToUpper(conf.Get("gobatis.log.level", "DEBUG"))
 
 	for k, v := range dss {
 		fac, err := p.facWrapper(p.createFactory)(v)
@@ -107,17 +128,24 @@ func (p *Processor) Process() error {
 }
 
 func (p *Processor) createFactory(v *DataSource) (factory.Factory, error) {
-	return gobatis.CreateFactory(
+	fac, err := gobatis.CreateFactory(
 		gobatis.SetMaxConn(v.MaxConn),
 		gobatis.SetMaxIdleConn(v.MaxIdleConn),
 		gobatis.SetConnMaxLifetime(time.Duration(v.ConnMaxLifetime)*time.Millisecond),
 		gobatis.SetLog(func(level int, format string, args ...interface{}) {
-			p.logger.Infof(format, args...)
+			p.selectLog()
 		}),
 		gobatis.SetDataSource(&datasource.CommonDataSource{
 			Name: v.DriverName,
 			Info: v.DriverInfo,
 		}))
+	if fac == nil || err != nil {
+		return nil, err
+	}
+	if p.usePageHelper {
+		fac = pagehelper.New(fac)
+	}
+	return fac, err
 }
 
 func (p *Processor) Close() error {
@@ -130,4 +158,28 @@ func (p *Processor) Close() error {
 
 func defaultWrapper(f func(source *DataSource) (factory.Factory, error)) func(source *DataSource) (factory.Factory, error) {
 	return f
+}
+
+func (p *Processor) selectLog() func(level int, fmt string, o ...interface{}) {
+	switch p.gobatisLog {
+	case "DEBUG":
+		return func(level int, fmt string, o ...interface{}) {
+			p.logger.Debugf(fmt, o...)
+		}
+	case "INFO":
+		return func(level int, fmt string, o ...interface{}) {
+			p.logger.Infof(fmt, o...)
+		}
+	case "WARN":
+		return func(level int, fmt string, o ...interface{}) {
+			p.logger.Warnf(fmt, o...)
+		}
+	case "ERROR":
+		return func(level int, fmt string, o ...interface{}) {
+			p.logger.Errorf(fmt, o...)
+		}
+	}
+	return func(level int, fmt string, o ...interface{}) {
+		p.logger.Debugf(fmt, o...)
+	}
 }
