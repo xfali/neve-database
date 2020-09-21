@@ -3,7 +3,7 @@
 // @version V1.0
 // Description:
 
-package ginImpl
+package gobatiseve
 
 import (
 	"errors"
@@ -11,6 +11,7 @@ import (
 	"github.com/xfali/gobatis"
 	"github.com/xfali/gobatis/datasource"
 	"github.com/xfali/gobatis/factory"
+	"github.com/xfali/neve-core"
 	"github.com/xfali/neve-core/container"
 	"github.com/xfali/xlog"
 	"sync"
@@ -75,6 +76,11 @@ func (p *Processor) Init(conf fig.Properties, container container.Container) err
 		container.RegisterByName(k, sm)
 	}
 
+	// scan mapper files
+	mapper := conf.Get("gobatis.mapper.dir", "")
+	if mapper != "" {
+		return gobatis.ScanMapperFile(neve.GetResource(mapper))
+	}
 	return nil
 }
 

@@ -3,7 +3,7 @@
 // @version V1.0
 // Description:
 
-package ginImpl
+package gobatiseve
 
 import "github.com/xfali/gobatis"
 
