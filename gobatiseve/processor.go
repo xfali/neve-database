@@ -12,7 +12,7 @@ import (
 	"github.com/xfali/gobatis/datasource"
 	"github.com/xfali/gobatis/factory"
 	"github.com/xfali/neve-core"
-	"github.com/xfali/neve-core/container"
+	"github.com/xfali/neve-core/bean"
 	"github.com/xfali/pagehelper"
 	"github.com/xfali/xlog"
 	"strings"
@@ -72,7 +72,7 @@ func OptFactoryCreatorWrapper(wrapper FactoryCreatorWrapper) Opt {
 	}
 }
 
-func (p *Processor) Init(conf fig.Properties, container container.Container) error {
+func (p *Processor) Init(conf fig.Properties, container bean.Container) error {
 	dss := map[string]*DataSource{}
 	err := conf.GetValue(BuildinValueDataSources, &dss)
 	if err != nil {
@@ -148,7 +148,7 @@ func (p *Processor) createFactory(v *DataSource) (factory.Factory, error) {
 	return fac, err
 }
 
-func (p *Processor) Destroy() error {
+func (p *Processor) BeanDestroy() error {
 	p.dataSources.Range(func(key, value interface{}) bool {
 		value.(*gobatis.SessionManager).Close()
 		return true
