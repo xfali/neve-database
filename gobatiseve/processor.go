@@ -132,9 +132,7 @@ func (p *Processor) createFactory(v *DataSource) (factory.Factory, error) {
 		gobatis.SetMaxConn(v.MaxConn),
 		gobatis.SetMaxIdleConn(v.MaxIdleConn),
 		gobatis.SetConnMaxLifetime(time.Duration(v.ConnMaxLifetime)*time.Millisecond),
-		gobatis.SetLog(func(level int, format string, args ...interface{}) {
-			p.selectLog()
-		}),
+		gobatis.SetLog(p.selectLog()),
 		gobatis.SetDataSource(&datasource.CommonDataSource{
 			Name: v.DriverName,
 			Info: v.DriverInfo,
