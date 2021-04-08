@@ -11,7 +11,7 @@ go get github.com/xfali/neve-database
 
 ## 使用
   
-### 1. neve集成（依赖neve-core）
+### 1. neve集成（依赖[neve-core](https://github.com/xfali/neve-core)）
 ```
 app := neve.NewFileConfigApplication("assets/config-example.yaml")
 app.RegisterBean(gobatiseve.NewProcessor())
