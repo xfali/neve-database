@@ -25,13 +25,13 @@ app.Run()
 在config-example.yaml中配置示例如下：
 ```
 neve:
-  DataSources:
+  dataSources:
     testDB:
-      DriverName: "mysql"
-      DriverInfo: "test:123@tcp(127.0.0.1:3306)/test?timeout=10s&readTimeout=15s&charset=uft8"
-      MaxCoon: 1000
-      MaxIdleConn: 500
-      ConnMaxLifetime: 0
+      driverName: "mysql"
+      driverInfo: "test:123@tcp(127.0.0.1:3306)/test?timeout=10s&readTimeout=15s&charset=uft8"
+      maxConn: 1000
+      maxIdleConn: 500
+      connMaxLifetime: 15
 
 gobatis:
   mapper:
@@ -41,7 +41,7 @@ gobatis:
   pagehelper:
     enable: true
 ```
-* 【neve.DataSources.testDB】为注入的DataSource名称，请根据实际项目进行修改，通过inject注入名称为testDB可直接获得SessionManager（testDB下为数据库相关配置）。
+* 【neve.dataSources.testDB】为注入的DataSource名称，请根据实际项目进行修改，通过inject注入名称为testDB可直接获得SessionManager（testDB下为数据库相关配置）。
 
     (SessionManager用法参考[gobatis](https://github.com/xfali/gobatis)及[gobatis-cmd](https://github.com/xfali/gobatis-cmd))
 ```

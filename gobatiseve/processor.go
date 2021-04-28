@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	BuildinValueDataSources = "neve.DataSources"
+	BuildinValueDataSources = "neve.dataSources"
 )
 
 type DataSource struct {

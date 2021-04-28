@@ -37,7 +37,7 @@ func TestGobatis(t *testing.T) {
 }
 
 func TestGobatisInject(t *testing.T) {
-	app := neve.NewFileConfigApplication("assets/config-example.yaml")
+	app := neve.NewFileConfigApplication("../assets/config-example.yaml")
 	app.RegisterBean(gobatiseve.NewProcessor())
 	app.RegisterBean(&MyTest{})
 	//Register other beans...
