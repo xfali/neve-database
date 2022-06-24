@@ -162,22 +162,22 @@ func (p *Processor) selectLog() func(level int, fmt string, o ...interface{}) {
 	switch p.gobatisLog {
 	case "DEBUG":
 		return func(level int, fmt string, o ...interface{}) {
-			p.logger.Debugf(fmt, o...)
+			xlog.Debugf(fmt, o...)
 		}
 	case "INFO":
 		return func(level int, fmt string, o ...interface{}) {
-			p.logger.Infof(fmt, o...)
+			xlog.Infof(fmt, o...)
 		}
 	case "WARN":
 		return func(level int, fmt string, o ...interface{}) {
-			p.logger.Warnf(fmt, o...)
+			xlog.Warnf(fmt, o...)
 		}
 	case "ERROR":
 		return func(level int, fmt string, o ...interface{}) {
-			p.logger.Errorf(fmt, o...)
+			xlog.Errorf(fmt, o...)
 		}
 	}
 	return func(level int, fmt string, o ...interface{}) {
-		p.logger.Debugf(fmt, o...)
+		xlog.Debugf(fmt, o...)
 	}
 }
